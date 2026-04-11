@@ -12,6 +12,7 @@
   --bg:#EFF1F8;--white:#fff;--borde:#DDE1ED;
   --texto-muted:#6B7280;--sombra:0 2px 14px rgba(29,58,107,.09);
 }
+  
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:#1a1a2e;min-height:100vh}
 
@@ -246,7 +247,7 @@ body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:#1a1a2e;min
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwfCvTbUsw5NpPT7Iki49bLpb6MzOG5jmf1cn2fsS0YelrjyrmSgimV3fA08h7HDzsp/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxshqW5EnptbBYklAdgrY5Yy1GHzuWq9kONvGfKcEEuUdtO2ae9OCm1P83GX8UOAa_Q/exec';
 
 const CATS = [
   {nm:'Panes de molde y salvado',dot:'b',prods:[
@@ -484,20 +485,24 @@ async function enviar(){
     if(respuesta && respuesta.status === 'ok'){
       if(fuera){
         mostrarConfirm('warn','Pedido recibido — fuera de horario',
-          'El pedido de '+nombre+(email?' ('+email+')':'')+' fue registrado como FUERA DE HORARIO y será reprogramado lo antes posible.'+
-          (email?' Se enviará confirmación al correo indicado.':''),
+          '¡Gracias, '+nombre+'! Tu pedido fue recibido fuera del horario habitual y será reprogramado lo antes posible.'+
+          (email?' En breve recibirás una confirmación en tu correo electrónico.':''),
           '⚠ Fuera de horario');
       } else {
-        mostrarConfirm('ok','¡Pedido enviado correctamente!',
-          'El pedido de '+nombre+(email?' ('+email+')':'')+' fue registrado en Google Sheets correctamente.'+
-          (email?' Se enviará confirmación automática al correo del cliente.':''),
-          '✓ Pedido confirmado');
+        mostrarConfirm('ok','¡Tu pedido fue confirmado!',
+          '¡Gracias, '+nombre+'! Tu pedido fue recibido y está siendo procesado.'+
+          (email?' En breve recibirás una confirmación en tu correo electrónico.':''),
+          '✓ Confirmado');
       }
       ['nombre','telefono','email','direccion','notas'].forEach(id=>document.getElementById(id).value='');
       estado={}; extras=[]; render();
+    } else if(respuesta && respuesta.status === 'not_registered'){
+      mostrarConfirm('err','Email no registrado',
+        'El correo electrónico ingresado no se encuentra registrado como cliente de Voglia. Por favor comunicate con nosotros para darte de alta y poder operar.',
+        '✗ Cliente no registrado');
     } else {
       mostrarConfirm('err','Error al registrar el pedido',
-        'El servidor respondió pero hubo un problema al guardar el pedido. Intentá nuevamente.',
+        'El servidor respondió pero hubo un problema al guardar el pedido. Por favor intentá nuevamente.',
         '✗ Error del servidor');
     }
   } catch(e){
