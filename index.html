@@ -424,26 +424,62 @@ async function enviar(){
     fecha:new Date().toLocaleString('es-AR')
   };
 
+  // Usamos JSONP para poder leer la respuesta real del servidor
+  // Apps Script debe responder con callback({status:'ok'}) cuando todo sale bien
   try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if(fuera){
-      mostrarConfirm('warn','Pedido recibido — fuera de horario',
-        'El pedido de '+nombre+(email?' ('+email+')':'')+' fue registrado como FUERA DE HORARIO y será reprogramado lo antes posible.'+
-        (email?' Se enviará confirmación al correo indicado.':''),
-        '⚠ Fuera de horario');
+    const respuesta = await new Promise((resolve, reject) => {
+      const cbName = 'cb_' + Date.now();
+      const script = document.createElement('script');
+      const timer = setTimeout(() => {
+        delete window[cbName];
+        document.body.removeChild(script);
+        reject(new Error('timeout'));
+      }, 12000);
+
+      window[cbName] = function(data) {
+        clearTimeout(timer);
+        delete window[cbName];
+        document.body.removeChild(script);
+        resolve(data);
+      };
+
+      const params = new URLSearchParams({
+        data: JSON.stringify(payload),
+        callback: cbName
+      });
+      script.src = SCRIPT_URL + '?' + params.toString();
+      script.onerror = () => {
+        clearTimeout(timer);
+        delete window[cbName];
+        document.body.removeChild(script);
+        reject(new Error('network'));
+      };
+      document.body.appendChild(script);
+    });
+
+    if(respuesta && respuesta.status === 'ok'){
+      if(fuera){
+        mostrarConfirm('warn','Pedido recibido — fuera de horario',
+          'El pedido de '+nombre+(email?' ('+email+')':'')+' fue registrado como FUERA DE HORARIO y será reprogramado lo antes posible.'+
+          (email?' Se enviará confirmación al correo indicado.':''),
+          '⚠ Fuera de horario');
+      } else {
+        mostrarConfirm('ok','¡Pedido enviado correctamente!',
+          'El pedido de '+nombre+(email?' ('+email+')':'')+' fue registrado en Google Sheets correctamente.'+
+          (email?' Se enviará confirmación automática al correo del cliente.':''),
+          '✓ Pedido confirmado');
+      }
+      ['nombre','telefono','email','direccion','notas'].forEach(id=>document.getElementById(id).value='');
+      estado={}; extras=[]; render();
     } else {
-      mostrarConfirm('ok','¡Pedido enviado correctamente!',
-        'El pedido de '+nombre+(email?' ('+email+')':'')+' fue registrado en Google Sheets.'+
-        (email?' Se enviará confirmación automática al correo del cliente.':''),
-        '✓ Pedido confirmado');
+      mostrarConfirm('err','Error al registrar el pedido',
+        'El servidor respondió pero hubo un problema al guardar el pedido. Intentá nuevamente.',
+        '✗ Error del servidor');
     }
-    // Limpiar
-    ['nombre','telefono','email','direccion','notas'].forEach(id=>document.getElementById(id).value='');
-    estado={}; extras=[]; render();
   } catch(e){
-    mostrarConfirm('err','Error al enviar',
-      'No se pudo conectar con Google Sheets. Verificá la URL del script y volvé a intentar.',
-      '✗ Error de conexión');
+    mostrarConfirm('err','No se pudo enviar el pedido',
+      'No hubo respuesta del servidor. Verificá tu conexión a internet o que la URL del script esté configurada correctamente.',
+      '✗ Sin conexión');
   }
 
   btn.disabled=false;
