@@ -241,7 +241,7 @@ body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:#1a1a2e;min
       </div>
     </div>
     <div class="pe-lista" id="pe-lista"></div>
-    <div class="pe-btns">
+    <div class="pe-btns" id="pe-btns">
       <button class="btn-modificar" onclick="cargarPedidoExistente()">Modificar este pedido</button>
       <button class="btn-cancelar-mod" onclick="cerrarPedidoExistente()">Cancelar</button>
     </div>
@@ -533,7 +533,7 @@ async function enviar(){
       estado={}; extras=[]; render();
     } else if(respuesta && respuesta.status === 'already_exists'){
       // Mostrar pedido existente
-      mostrarPedidoExistente(respuesta.pedido, respuesta.fecha);
+      mostrarPedidoExistente(respuesta.pedido, respuesta.fecha, respuesta.puedeModificar);
     } else if(respuesta && respuesta.status === 'not_registered'){
       mostrarConfirm('err','Email no registrado',
         'El correo electrónico ingresado no se encuentra registrado como cliente de Voglia. Por favor comunicate con nosotros para darte de alta y poder operar.',
@@ -553,7 +553,7 @@ async function enviar(){
   btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar pedido`;
 }
 
-function mostrarPedidoExistente(pedido, fecha) {
+function mostrarPedidoExistente(pedido, fecha, puedeModificar) {
   const box = document.getElementById('pedido-existente');
   box.style.display = 'block';
   document.getElementById('pe-fecha').textContent = 'Registrado el ' + fecha;
@@ -564,9 +564,24 @@ function mostrarPedidoExistente(pedido, fecha) {
       <span class="pe-item-cant">${item.cantidad} ${item.modo}</span>
     </div>`
   ).join('');
-  // Guardar pedido para poder cargarlo
   window._pedidoExistente = pedido;
   window._esModificacion = false;
+
+  // Mostrar botones según si puede modificar o no
+  const btns = document.getElementById('pe-btns');
+  if (puedeModificar) {
+    btns.innerHTML = `
+      <button class="btn-modificar" onclick="cargarPedidoExistente()">Modificar este pedido</button>
+      <button class="btn-cancelar-mod" onclick="cerrarPedidoExistente()">Cancelar</button>`;
+  } else {
+    btns.innerHTML = `
+      <div style="background:#FEE2E2;border:1.5px solid #F87171;border-radius:12px;padding:14px 16px;text-align:center;width:100%">
+        <div style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;color:#7F1D1D;margin-bottom:6px">Fuera del horario de modificaciones</div>
+        <div style="font-size:13px;color:#991B1B;line-height:1.5">El horario para modificar pedidos es de <strong>08:00 a 15:00 hs</strong>. Si necesitás hacer cambios, comunicate con nosotros directamente.</div>
+        <button class="btn-cancelar-mod" onclick="cerrarPedidoExistente()" style="margin-top:12px;width:100%">Cerrar</button>
+      </div>`;
+  }
+
   box.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
