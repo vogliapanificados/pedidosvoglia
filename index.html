@@ -71,6 +71,8 @@ body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:#1a1a2e;min
 .pname{font-size:13px;font-weight:700;color:#1a1a2e;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pdet{font-size:11px;color:var(--texto-muted);margin-top:2px;font-weight:600}
 .extra-badge{display:inline-block;background:#DBEAFE;color:var(--a);font-size:9px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:5px;vertical-align:middle}
+.prod-cod{display:inline-block;background:#F3F4F6;color:#9CA3AF;font-size:10px;font-weight:700;border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle;border:1px solid #E5E7EB}
+.solo-box-tag{background:#1D3A6B;color:white;font-size:11px;font-weight:800;border-radius:8px;padding:4px 10px;font-family:'Nunito',sans-serif;white-space:nowrap}
 
 /* CONTROL CANTIDAD + MODO POR PRODUCTO */
 .prod-ctrl{display:flex;align-items:center;gap:6px;flex-shrink:0}
@@ -244,37 +246,38 @@ body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:#1a1a2e;min
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzrmtHA8NToidm-3fM-eT67EovqZhDh4XaTEhbB6-UB28yZW051Yko1M9LynKo5YWEO/exec';
+const SCRIPT_URL = 'TU_URL_DE_APPS_SCRIPT_AQUI';
 
 const CATS = [
   {nm:'Panes de molde y salvado',dot:'b',prods:[
-    {n:'Pan de Molde 380g',d:'Pack chico'},
-    {n:'Pan de Molde 600g',d:'Pack familiar'},
-    {n:'Pan de Salvado 380g',d:'Pack chico'},
-    {n:'Pan de Salvado 600g',d:'Pack familiar'},
-    {n:'Pan de Salvado con Semillas 380g',d:''},
-    {n:'Pan con Semillas',d:''},
+    {n:'Pan de Molde 380g',     d:'Pack chico',    cod:6,    uBandeja:10},
+    {n:'Pan de Molde 600g',     d:'Pack familiar', cod:8,    uBandeja:15},
+    {n:'Pan de Salvado 380g',   d:'Pack chico',    cod:7,    uBandeja:10},
+    {n:'Pan de Salvado 600g',   d:'Pack familiar', cod:9,    uBandeja:15},
+    {n:'Pan con Semillas',      d:'',              cod:30,   uBandeja:15},
   ]},
   {nm:'Pan de papa',dot:'r',prods:[
-    {n:'Pan de Papa Clásico',d:'4u. por paquete · 290g'},
-    {n:'Pan de Papa con Sésamo',d:'4u. por paquete · 290g'},
-    {n:'Pan de Papa con Queso',d:'4u. por paquete · 290g'},
+    {n:'Pan de Papa Clasico',   d:'290g - 4u. por paquete', cod:1056, uBandeja:9},
+    {n:'Pan de Papa con Sesamo',d:'290g - 4u. por paquete', cod:1057, uBandeja:9},
+    {n:'Pan de Papa con Queso', d:'290g - 4u. por paquete', cod:1055, uBandeja:9},
   ]},
   {nm:'Panchos y hamburguesas',dot:'o',prods:[
-    {n:'Pan de Pancho',d:'6u. por paquete · 230g'},
-    {n:'Pan Super Pancho',d:'6u. por paquete · 320g'},
-    {n:'Pan de Hamburguesa',d:'4u. por paquete · 210g'},
-    {n:'Pan Maxi Hamburguesa',d:'4u. por paquete · 300g'},
+    {n:'Pan de Pancho',         d:'230g - 6u. por paquete', cod:4,   uBandeja:16},
+    {n:'Pan Super Pancho',      d:'320g - 6u. por paquete', cod:104, uBandeja:10},
+    {n:'Pan de Hamburguesa',    d:'210g - 4u. por paquete', cod:5,   uBandeja:24},
+    {n:'Pan Maxi Hamburguesa',  d:'300g - 4u. por paquete', cod:105, uBandeja:10},
   ]},
   {nm:'Pizzas y empanadas',dot:'g',prods:[
-    {n:'Prepizza Voglia',d:'2u. por paquete · 520g'},
-    {n:'Pizzeta',d:'12u. por paquete · 360g'},
-    {n:'Tapa de Empanada',d:'Criollas y hojaldradas · 12u.'},
-    {n:'Tapa de Pascualina',d:'Criollas y hojaldradas · 2u.'},
+    {n:'Prepizza Voglia',            d:'520g - 2u. por paquete', cod:1,  uBandeja:10},
+    {n:'Pizzeta',                    d:'360g - 12u. por paquete',cod:2,  uBandeja:20},
+    {n:'Tapa de Empanada Criolla',   d:'12u. por paquete',       cod:21, uBandeja:60},
+    {n:'Tapa de Empanada Hojaldre',  d:'12u. por paquete',       cod:22, uBandeja:60},
+    {n:'Tapa de Pascualina Criolla', d:'2u. por paquete',        cod:23, uBandeja:40},
+    {n:'Tapa de Pascualina Hojaldre',d:'2u. por paquete',        cod:24, uBandeja:40},
   ]},
   {nm:'Especialidades',dot:'r',prods:[
-    {n:'Pan de Pebete',d:'4u. por paquete · 250g'},
-    {n:'Pionono',d:'1u. por paquete · 200g'},
+    {n:'Pan de Pebete',d:'250g - 4u. por paquete', cod:3,  uBandeja:20},
+    {n:'Pionono',      d:'200g - caja de 20u.',     cod:25, uBandeja:20, soloBox:true},
   ]},
 ];
 
@@ -311,20 +314,26 @@ function actualizarResumen(){
 function mkRow(cat, p, k, isExtra){
   const e = estado[k];
   const q = e.cantidad;
+  const esBox = p.soloBox || false;
+  // Toggle U/B: si es soloBox solo muestra "Caja", si no muestra U/B
+  const toggleHtml = esBox
+    ? `<div class="solo-box-tag">Caja (${p.uBandeja}u.)</div>`
+    : `<div class="mini-toggle">
+        <button class="mt-btn${e.modo==='u'?' mu-on':''}" id="mu_${k}" onclick="setModo('${k}','u')">U</button>
+        <button class="mt-btn${e.modo==='b'?' mb-on':''}" id="mb_${k}" onclick="setModo('${k}','b')">B</button>
+      </div>`;
+  const codHtml = p.cod ? `<span class="prod-cod">#${p.cod}</span>` : '';
   return `
     <div class="prow${isExtra?' extra-row':''}">
       <div class="pinfo">
         <div class="pdot dot-${cat.dot}"></div>
         <div style="min-width:0">
-          <div class="pname">${p.n}${isExtra?'<span class="extra-badge">EXTRA</span>':''}</div>
+          <div class="pname">${p.n}${codHtml}${isExtra?'<span class="extra-badge">EXTRA</span>':''}</div>
           ${p.d?`<div class="pdet">${p.d}</div>`:''}
         </div>
       </div>
       <div class="prod-ctrl">
-        <div class="mini-toggle">
-          <button class="mt-btn${e.modo==='u'?' mu-on':''}" id="mu_${k}" onclick="setModo('${k}','u')">U</button>
-          <button class="mt-btn${e.modo==='b'?' mb-on':''}" id="mb_${k}" onclick="setModo('${k}','b')">B</button>
-        </div>
+        ${toggleHtml}
         <div class="qty-wrap">
           <button class="qbtn qbtn-m" onclick="delta('${k}',-1)">−</button>
           <span class="qnum${q>0?' on':''}" id="n_${k}">${q}</span>
@@ -341,7 +350,7 @@ function render(){
     h += `<div class="cat-hdr"><div class="cat-dot"></div><span class="cat-nm">${cat.nm}</span></div>`;
     cat.prods.forEach(p=>{
       const k = keyOf(cat.nm, p.n);
-      if(!estado[k]) estado[k]={cantidad:0,modo:'u'};
+      if(!estado[k]) estado[k]={cantidad:0,modo:p.soloBox?'b':'u'};
       h += mkRow(cat, p, k, false);
     });
   });
@@ -401,10 +410,25 @@ async function enviar(){
   const items=[];
   Object.entries(estado).forEach(([k,e])=>{
     if(e.cantidad>0){
+      // Buscar el producto en CATS para obtener cod y uBandeja
+      let prodData = null;
+      CATS.forEach(cat => cat.prods.forEach(p => {
+        const pk = keyOf(cat.nm, p.n);
+        if(pk === k) prodData = p;
+      }));
+      const cod = prodData ? prodData.cod : '';
+      const uBandeja = prodData ? prodData.uBandeja : 1;
+      const modoLabel = (e.modo==='b' || (prodData && prodData.soloBox)) ? 'Bandejas' : 'Unidades';
+      // CTD: si es bandeja multiplica por uBandeja, si es unidad es 1:1
+      const ctd = (e.modo==='b' || (prodData && prodData.soloBox))
+        ? e.cantidad * uBandeja
+        : e.cantidad;
       items.push({
-        producto: k.replace(/_+/g,' ').trim(),
+        producto: prodData ? prodData.n : k.replace(/_+/g,' ').trim(),
+        cod_item: cod,
         cantidad: e.cantidad,
-        modo: e.modo==='u'?'Unidades':'Bandejas'
+        modo: modoLabel,
+        ctd: ctd
       });
     }
   });
