@@ -239,8 +239,8 @@ body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:#1a1a2e;min
   <div id="pedido-section" style="display:none">
   <span class="slbl">Productos del pedido</span>
   <div style="margin:0 16px 10px;font-size:12px;color:var(--texto-muted);font-weight:600;display:flex;align-items:center;gap:8px">
-    <span style="background:#1D3A6B;color:white;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800">U</span> Unidades &nbsp;·&nbsp;
-    <span style="background:#CC1F1F;color:white;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800">B</span> Bandejas &nbsp;— elegí por producto
+    <span style="background:#a0aec0;color:white;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800">Unid.</span> Unidades &nbsp;·&nbsp;
+    <span style="background:#CC1F1F;color:white;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800">Band.</span> Bandejas &nbsp;— por defecto Bandejas
   </div>
   <div class="prod-card" id="prod-card"></div>
 
@@ -376,8 +376,8 @@ function mkRow(cat, p, k, isExtra){
   const toggleHtml = esBox
     ? `<div class="solo-box-tag">Caja (${p.uBandeja}u.)</div>`
     : `<div class="mini-toggle">
-        <button class="mt-btn${e.modo==='u'?' mu-on':''}" id="mu_${k}" onclick="setModo('${k}','u')">U</button>
-        <button class="mt-btn${e.modo==='b'?' mb-on':''}" id="mb_${k}" onclick="setModo('${k}','b')">B</button>
+        <button class="mt-btn${e.modo==='u'?' mu-on':''}" id="mu_${k}" onclick="setModo('${k}','u')">Unid.</button>
+        <button class="mt-btn${e.modo==='b'?' mb-on':''}" id="mb_${k}" onclick="setModo('${k}','b')">Band.</button>
       </div>`;
   const codHtml = p.cod ? `<span class="prod-cod">#${p.cod}</span>` : '';
   return `
@@ -407,7 +407,7 @@ function render(){
     h += `<div class="cat-hdr"><div class="cat-dot"></div><span class="cat-nm">${cat.nm}</span></div>`;
     cat.prods.forEach(p=>{
       const k = keyOf(cat.nm, p.n);
-      if(!estado[k]) estado[k]={cantidad:0,modo:p.soloBox?'b':'u'};
+      if(!estado[k]) estado[k]={cantidad:0,modo:'b'};
       h += mkRow(cat, p, k, false);
     });
   });
