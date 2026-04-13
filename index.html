@@ -549,11 +549,10 @@ async function enviar(){
           (email?' En breve recibirás una confirmación en tu correo electrónico.':''),
           '✓ Confirmado');
       }
-      // Limpiar solo campos que existen
-      ['email','notas'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-      window._clienteData = null;
-      window._esModificacion = false;
-      onEmailInput();
+      // Limpiar notas
+      const notasEl = document.getElementById('notas');
+      if(notasEl) notasEl.value='';
+      estado={}; extras=[]; render();
       estado={}; extras=[]; render();
     } else if(respuesta && respuesta.status === 'already_exists'){
       // Mostrar pedido existente
