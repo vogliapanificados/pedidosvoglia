@@ -515,7 +515,7 @@ async function enviar(){
         delete window[cbName];
         document.body.removeChild(script);
         reject(new Error('timeout'));
-      }, 12000);
+      }, 30000);
 
       window[cbName] = function(data) {
         clearTimeout(timer);
