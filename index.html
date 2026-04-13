@@ -549,7 +549,11 @@ async function enviar(){
           (email?' En breve recibirás una confirmación en tu correo electrónico.':''),
           '✓ Confirmado');
       }
-      ['nombre','telefono','email','direccion','notas'].forEach(id=>document.getElementById(id).value='');
+      // Limpiar solo campos que existen
+      ['email','notas'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+      window._clienteData = null;
+      window._esModificacion = false;
+      onEmailInput();
       estado={}; extras=[]; render();
     } else if(respuesta && respuesta.status === 'already_exists'){
       // Mostrar pedido existente
