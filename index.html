@@ -865,14 +865,27 @@ function confirmarPedido() {
 
 // ── INCENTIVO DE VENTA ───────────────────────────────
 function mostrarIncentivo() {
-  const n = Object.values(estado).filter(e => e.cantidad > 0).length;
   const box = document.getElementById('incentivo-box');
   if (!box) return;
-  if (n > 0 && n < 5) {
-    box.style.display = 'block';
-  } else {
-    box.style.display = 'none';
-  }
+
+  // Calcular total de bandejas
+  let totalBandejas = 0;
+  Object.entries(estado).forEach(([k, e]) => {
+    if (e.cantidad <= 0) return;
+    if (e.modo === 'b') {
+      totalBandejas += e.cantidad;
+    } else {
+      // modo unidades: convertir a bandejas equivalentes
+      let uBandeja = 1;
+      CATS.forEach(cat => cat.prods.forEach(p => {
+        if (keyOf(cat.nm, p.n) === k) uBandeja = p.uBandeja || 1;
+      }));
+      totalBandejas += e.cantidad / uBandeja;
+    }
+  });
+
+  const hayProductos = Object.values(estado).some(e => e.cantidad > 0);
+  box.style.display = (hayProductos && totalBandejas < 15) ? 'block' : 'none';
 }
 
 tick(); setInterval(tick,30000); render();
