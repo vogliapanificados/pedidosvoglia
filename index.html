@@ -507,23 +507,22 @@ async function enviar(){
 
   // Usamos JSONP para poder leer la respuesta real del servidor
   // Apps Script debe responder con callback({status:'ok'}) cuando todo sale bien
+  // Función JSONP reutilizable
   try{
     const respuesta = await new Promise((resolve, reject) => {
       const cbName = 'cb_' + Date.now();
       const script = document.createElement('script');
       const timer = setTimeout(() => {
         delete window[cbName];
-        document.body.removeChild(script);
+        if (document.body.contains(script)) document.body.removeChild(script);
         reject(new Error('timeout'));
       }, 30000);
-
       window[cbName] = function(data) {
         clearTimeout(timer);
         delete window[cbName];
-        document.body.removeChild(script);
+        if (document.body.contains(script)) document.body.removeChild(script);
         resolve(data);
       };
-
       const params = new URLSearchParams({
         data: JSON.stringify(payload),
         callback: cbName
@@ -532,7 +531,7 @@ async function enviar(){
       script.onerror = () => {
         clearTimeout(timer);
         delete window[cbName];
-        document.body.removeChild(script);
+        if (document.body.contains(script)) document.body.removeChild(script);
         reject(new Error('network'));
       };
       document.body.appendChild(script);
