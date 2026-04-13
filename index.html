@@ -244,6 +244,16 @@ body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:#1a1a2e;min
   </div>
   <div class="prod-card" id="prod-card"></div>
 
+  <div id="incentivo-box" style="display:none;margin:14px 16px 0">
+    <div style="background:linear-gradient(135deg,#1D3A6B,#2d52a0);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px">
+      <div style="font-size:28px;flex-shrink:0">🛒</div>
+      <div>
+        <div style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:white;margin-bottom:4px">📦 Revisá tu pedido antes de confirmar</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.5">Tenés pocos productos seleccionados. Revisá si te falta algo antes de confirmar — <strong style="color:#FCD34D">después es más difícil modificar.</strong></div>
+      </div>
+    </div>
+  </div>
+
   <div class="resumen">
     <div class="res-l">Productos cargados</div>
     <div class="res-r" id="resumen">0 ítems</div>
@@ -307,34 +317,34 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvYF_Rw8MDAcUguvabt
 
 const CATS = [
   {nm:'Panes de molde y salvado',dot:'b',prods:[
-    {n:'Pan de Molde 380g',     d:'Pack chico',    cod:6,    uBandeja:15},
-    {n:'Pan de Molde 600g',     d:'Pack familiar', cod:8,    uBandeja:10},
-    {n:'Pan de Salvado 380g',   d:'Pack chico',    cod:7,    uBandeja:15},
-    {n:'Pan de Salvado 600g',   d:'Pack familiar', cod:9,    uBandeja:10},
-    {n:'Pan con Semillas',      d:'',              cod:30,   uBandeja:15},
+    {n:'Pan de Molde 380g',     d:'Pack chico',    cod:6,    uBandeja:15, step:15},
+    {n:'Pan de Molde 600g',     d:'Pack familiar', cod:8,    uBandeja:10, step:10},
+    {n:'Pan de Salvado 380g',   d:'Pack chico',    cod:7,    uBandeja:15, step:15},
+    {n:'Pan de Salvado 600g',   d:'Pack familiar', cod:9,    uBandeja:10, step:10},
+    {n:'Pan con Semillas',      d:'',              cod:30,   uBandeja:15, step:15},
   ]},
   {nm:'Pan de papa',dot:'r',prods:[
-    {n:'Pan de Papa Clasico',   d:'290g - 4u. por paquete', cod:1056, uBandeja:9},
-    {n:'Pan de Papa con Sesamo',d:'290g - 4u. por paquete', cod:1057, uBandeja:9},
-    {n:'Pan de Papa con Queso', d:'290g - 4u. por paquete', cod:1055, uBandeja:9},
+    {n:'Pan de Papa Clasico',   d:'290g - 4u. por paquete', cod:1056, uBandeja:9, step:9},
+    {n:'Pan de Papa con Sesamo',d:'290g - 4u. por paquete', cod:1057, uBandeja:9, step:9},
+    {n:'Pan de Papa con Queso', d:'290g - 4u. por paquete', cod:1055, uBandeja:9, step:9},
   ]},
   {nm:'Panchos y hamburguesas',dot:'o',prods:[
-    {n:'Pan de Pancho',         d:'230g - 6u. por paquete', cod:4,   uBandeja:16},
-    {n:'Pan Super Pancho',      d:'320g - 6u. por paquete', cod:104, uBandeja:10},
-    {n:'Pan de Hamburguesa',    d:'210g - 4u. por paquete', cod:5,   uBandeja:24},
-    {n:'Pan Maxi Hamburguesa',  d:'300g - 4u. por paquete', cod:105, uBandeja:10},
+    {n:'Pan de Pancho',         d:'230g - 6u. por paquete', cod:4,   uBandeja:16, step:16},
+    {n:'Pan Super Pancho',      d:'320g - 6u. por paquete', cod:104, uBandeja:10, step:10},
+    {n:'Pan de Hamburguesa',    d:'210g - 4u. por paquete', cod:5,   uBandeja:24, step:24},
+    {n:'Pan Maxi Hamburguesa',  d:'300g - 4u. por paquete', cod:105, uBandeja:10, step:10},
   ]},
   {nm:'Pizzas y empanadas',dot:'g',prods:[
-    {n:'Prepizza Voglia',            d:'520g - 2u. por paquete', cod:1,  uBandeja:10},
-    {n:'Pizzeta',                    d:'360g - 12u. por paquete',cod:2,  uBandeja:20},
-    {n:'Tapa de Empanada Criolla',   d:'12u. por paquete',       cod:21, uBandeja:60},
-    {n:'Tapa de Empanada Hojaldre',  d:'12u. por paquete',       cod:22, uBandeja:60},
-    {n:'Tapa de Pascualina Criolla', d:'2u. por paquete',        cod:23, uBandeja:40},
-    {n:'Tapa de Pascualina Hojaldre',d:'2u. por paquete',        cod:24, uBandeja:40},
+    {n:'Prepizza Voglia',            d:'520g - 2u. por paquete', cod:1,  uBandeja:10, step:10},
+    {n:'Pizzeta',                    d:'360g - 12u. por paquete',cod:2,  uBandeja:20, step:20},
+    {n:'Tapa de Empanada Criolla',   d:'12u. por paquete',       cod:21, uBandeja:60, step:30},
+    {n:'Tapa de Empanada Hojaldre',  d:'12u. por paquete',       cod:22, uBandeja:60, step:30},
+    {n:'Tapa de Pascualina Criolla', d:'2u. por paquete',        cod:23, uBandeja:40, step:20},
+    {n:'Tapa de Pascualina Hojaldre',d:'2u. por paquete',        cod:24, uBandeja:40, step:20},
   ]},
   {nm:'Especialidades',dot:'r',prods:[
-    {n:'Pan de Pebete',d:'250g - 4u. por paquete', cod:3,  uBandeja:20},
-    {n:'Pionono',      d:'200g - caja de 20u.',     cod:25, uBandeja:20, soloBox:true},
+    {n:'Pan de Pebete',d:'250g - 4u. por paquete', cod:3,  uBandeja:20, step:20},
+    {n:'Pionono',      d:'200g - caja de 20u.',     cod:25, uBandeja:20, soloBox:true, step:20},
   ]},
 ];
 
@@ -347,20 +357,36 @@ function keyOf(cat, prod){ return (cat+'__'+prod).replace(/[^a-zA-Z0-9]/g,'_'); 
 
 function setModo(k, m){
   estado[k].modo = m;
-  // actualizar estilos botones
+  estado[k].cantidad = 0; // reset al cambiar modo
   const bu = document.getElementById('mu_'+k);
   const bb = document.getElementById('mb_'+k);
   if(bu && bb){
     bu.className = 'mt-btn' + (m==='u' ? ' mu-on' : '');
     bb.className = 'mt-btn' + (m==='b' ? ' mb-on' : '');
   }
+  const el = document.getElementById('n_'+k);
+  if(el){ el.textContent = '0'; el.className = 'qnum'; }
+  actualizarResumen();
+}
+
+function getStep(k) {
+  let step = 1;
+  CATS.forEach(cat => cat.prods.forEach(p => {
+    const pk = keyOf(cat.nm, p.n);
+    if (pk === k) step = p.step || p.uBandeja || 1;
+  }));
+  // extras no tienen step
+  if (k.startsWith('extra_')) step = 1;
+  return step;
 }
 
 function delta(k, d){
-  estado[k].cantidad = Math.max(0, estado[k].cantidad + d);
+  const step = estado[k].modo === 'b' ? 1 : getStep(k);
+  estado[k].cantidad = Math.max(0, estado[k].cantidad + d * step);
   const el = document.getElementById('n_'+k);
   if(el){ el.textContent = estado[k].cantidad; el.className='qnum'+(estado[k].cantidad>0?' on':''); }
   actualizarResumen();
+  mostrarIncentivo();
 }
 
 function actualizarResumen(){
@@ -393,7 +419,7 @@ function mkRow(cat, p, k, isExtra){
         ${toggleHtml}
         <div class="qty-wrap">
           <button class="qbtn qbtn-m" onclick="delta('${k}',-1)">−</button>
-          <span class="qnum${q>0?' on':''}" id="n_${k}">${q}</span>
+          <span class="qnum${q>0?' on':''}" id="n_${k}">${e.modo==='b' ? q : (q > 0 ? q + ' u.' : 0)}</span>
           <button class="qbtn qbtn-p" onclick="delta('${k}',1)">+</button>
         </div>
       </div>
@@ -726,6 +752,18 @@ function procesarRespuestaCliente(resp) {
     document.getElementById('pedido-section').style.display    = 'block';
     document.getElementById('email-hint').innerHTML =
       '<span style="color:#166534">✓ Cliente verificado</span>';
+  }
+}
+
+// ── INCENTIVO DE VENTA ───────────────────────────────
+function mostrarIncentivo() {
+  const n = Object.values(estado).filter(e => e.cantidad > 0).length;
+  const box = document.getElementById('incentivo-box');
+  if (!box) return;
+  if (n > 0 && n < 5) {
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
   }
 }
 
